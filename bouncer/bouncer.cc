@@ -3,7 +3,9 @@
  *
  *
  *
- *
+ *Once we get linked with ffmpeg, we'll
+ * likely need to use avformat_open_input().
+ * to open a jpg image to an avframe for editing.
  *
  */
 #include <iostream>
