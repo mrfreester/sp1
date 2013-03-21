@@ -2,14 +2,24 @@
 //Rory Savage
 //Circle drawing program
 /*utahenc*/
-#include "libavutil/avassert.h"
-#include "avcodec.h"
-#include "bytestream.h"
-#include "bmp.h"
-#include "internal.h"
-#include <stdio.h>
-#include <math.h>
-#include "utah.h"
+//#include "libavutil/avassert.h"
+//#include "avcodec.h"
+//#include "bytestream.h"
+//#include "bmp.h"
+//#include "internal.h"
+//#include <stdio.h>
+//#include <math.h>
+//#include "utah.h"
+
+extern "C"
+
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+
+
+}
+
 
 
 
