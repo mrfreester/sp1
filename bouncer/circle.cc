@@ -10,13 +10,17 @@
 //#include <stdio.h>
 //#include <math.h>
 //#include "utah.h"
+#ifndef INT64_c
+#define INT64_C(c)(c##LL)
+#define UNIT64_C(c)(c##ULL)
+#endif
 
 extern "C"
 
 {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-
+#include <libavcodec/bytestream.h>
 
 }
 
@@ -24,16 +28,16 @@ extern "C"
 
 
 //static int UTAH_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *pict, int *got_packet)
-AVFrame drawCircle(AVFrame *pict, int start)
+AVFrame drawCircle(AVFrame *p, int start)
 {
   // UTAHContext *s = avctx->priv_data;
   //AVFrame * const p = &s->picture;
-  //uint8_t *buf;
+  uint8_t *buf;
   //*p = *pict;
   //p->pict_type = AV_PICTURE_TYPE_I;
   //p->key_frame = 1;
-  AVFrame * const p;
-  *p=*pict;
+  // AVFrame * const p=*pict;
+  //*p=*pict;
   //int ret;
   int height;
   int width;
@@ -65,7 +69,7 @@ AVFrame drawCircle(AVFrame *pict, int start)
     //get point on right side of circle
     int right=center+x;
     //define color
-    u int8_t  color=0;
+    uint8_t  color=0;
     //for loop to draw one line of the circle
     for(left;left<=right; left++){
       //get position of pixel
@@ -73,7 +77,7 @@ AVFrame drawCircle(AVFrame *pict, int start)
       //changer color of pixel
       mypixel=&color;
       //place pixel into picture
-      bytestream_put_byte(&buf, mypixel[0];
+      bytestream_put_byte(&buf, mypixel[0]);
 			  //increment color
 			  color++;
     }
