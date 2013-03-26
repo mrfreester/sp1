@@ -7,12 +7,15 @@
 //#include "bytestream.h"
 //#include "bmp.h"
 //#include "internal.h"
-//#include <stdio.h>
-//#include <math.h>
+#include <stdio.h>
+#include <math.h>
 //#include "utah.h"
-#ifndef INT64_c
-#define INT64_C(c)(c##LL)
-#define UNIT64_C(c)(c##ULL)
+#include <iostream>
+#include "circle.h"
+
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#define UINT64_C(c) (c ## ULL)
 #endif
 
 extern "C"
@@ -20,15 +23,17 @@ extern "C"
 {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavcodec/bytestream.h>
+//#include <../ffmpeg/libavcodec/bytestream.h>
 
 }
 
-
-
+namespace circlespace
+{
+  circle::circle(){}
+  circle::~circle(){}
 
 //static int UTAH_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *pict, int *got_packet)
-AVFrame drawCircle(AVFrame *p, int start)
+AVFrame* circle::drawCircle(AVFrame *p, int start)
 {
   // UTAHContext *s = avctx->priv_data;
   //AVFrame * const p = &s->picture;
@@ -53,11 +58,22 @@ AVFrame drawCircle(AVFrame *p, int start)
   radius=width*.20;
   int center=0;
   center=width/2;
+  int diamater=radius*2;
+
+  int left=0;
+  int right=0;
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ for(start=0;start<height;start++) {
+            for(left=0;left<width;left++) {
+                p->data[0][start * p->linesize[0] + left] = left + start + 1 * 3;
+            }
+        }
 
 
- 
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   //For loop to draw circle
-  for (int row=start; row<height; row++){
+ /* for (int row=start; row<=diamater; row++){
     // define y value
     int y=row;
     //define x value
@@ -80,16 +96,18 @@ AVFrame drawCircle(AVFrame *p, int start)
       bytestream_put_byte(&buf, mypixel[0]);
 			  //increment color
 			  color++;
-    }
+    }*/
 
 
 	/* for(int col=0;col<width; col++){
       uint8_t *mypixel = p->data[0]+row*p->linesize[0]+col;
        bytestream_put_byte(&buf, mypixel[0]);
 
+       }
        }*/
-  }
 
  
   return p;
 }
+
+};
