@@ -62,14 +62,42 @@ AVFrame* circle::drawCircle(AVFrame *p, int start)
 
   int left=0;
   int right=0;
+
+  ;
  ////////////////////////////////////////////////////////////////////////////////////////////////////
- for(start=0;start<height;start++) {
+  int x,y,i;
+AVFrame *frame; 
+AVCodecContext *c= NULL;
+AVCodec *codec;
+
+
+    codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
+ c = avcodec_alloc_context3(codec);
+
+ frame = p;
+/*for(start=0;start<height;start++) {
             for(left=0;left<width;left++) {
                 p->data[0][start * p->linesize[0] + left] = left + start + 1 * 3;
             }
+	    }*/
+
+
+        /* prepare a dummy image */
+        /* Y */
+        for(y=0;y<c->height;y++) {
+            for(x=0;x<c->width;x++) {
+                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+		std::cout << y << std::endl;
+            }
         }
 
-
+        /* Cb and Cr */
+        for(y=0;y<c->height/2;y++) {
+            for(x=0;x<c->width/2;x++) {
+                frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
+                frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
+            }
+        }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //For loop to draw circle
