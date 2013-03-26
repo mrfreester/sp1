@@ -35,6 +35,7 @@ namespace circlespace
 //static int UTAH_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *pict, int *got_packet)
 AVFrame* circle::drawCircle(AVFrame *p, int start)
 {
+  std::cout<<"//////////////////////////////////////////////////"<<std::endl;
   // UTAHContext *s = avctx->priv_data;
   //AVFrame * const p = &s->picture;
   uint8_t *buf;
@@ -65,7 +66,7 @@ AVFrame* circle::drawCircle(AVFrame *p, int start)
  ////////////////////////////////////////////////////////////////////////////////////////////////////
  for(start=0;start<height;start++) {
             for(left=0;left<width;left++) {
-                p->data[0][start * p->linesize[0] + left] = left + start + 1 * 3;
+                p->data[0][start * p->linesize[0] + left] = 150;
             }
         }
 

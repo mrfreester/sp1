@@ -41,7 +41,7 @@
   AVPacket pkt;
   AVFrame *frame1;
   frame1 = avcodec_alloc_frame();
-  circlespace::circle circ();
+  circlespace::circle circ;
 
   frame1=circ.drawCircle(pFrame, 10);
 
