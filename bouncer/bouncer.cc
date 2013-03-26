@@ -47,7 +47,7 @@
 
   
   // Open file
-  sprintf(szFilename, "frame%d.utah", iFrame);
+  sprintf(szFilename, "frame%d.png", iFrame);
   pFile=fopen(szFilename, "wb");
   if(pFile==NULL)
     return;
@@ -59,7 +59,7 @@
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
 
-  codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
+  codec = avcodec_find_encoder(AV_CODEC_ID_PNG);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -76,7 +76,7 @@ if (!c) {
 //pFrame=frame1;
     c->width=width;
     c->height=height;
-    c->pix_fmt = AV_PIX_FMT_RGB8;
+    c->pix_fmt = AV_PIX_FMT_RGB24;
 
     frame1=circ.drawCircle(pFrame, c,  10);
 
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
     return -1;
   
   // Determine required buffer size and allocate buffer
-  numBytes=avpicture_get_size(PIX_FMT_RGB8, pCodecCtx->width,
+  numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
 pCodecCtx->height);
   buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
 
@@ -184,7 +184,7 @@ pCodecCtx->height);
         pCodecCtx->pix_fmt,
         pCodecCtx->width,
         pCodecCtx->height,
-        PIX_FMT_RGB8,
+        PIX_FMT_RGB24,
         SWS_BILINEAR,
         NULL,
         NULL,
@@ -194,7 +194,7 @@ pCodecCtx->height);
   // Assign appropriate parts of buffer to image planes in pFrameRGB
   // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
   // of AVPicture
-  avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB8,
+  avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
 pCodecCtx->width, pCodecCtx->height);
   
   // Read frames and save first five frames to disk

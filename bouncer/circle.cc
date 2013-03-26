@@ -35,7 +35,7 @@ namespace circlespace
 //static int UTAH_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *pict, int *got_packet)
   AVFrame* circle::drawCircle(AVFrame *p, AVCodecContext *c,  int start)
 {
-  std::cout<<"//////////////////////////////////////////////////"<<std::endl;
+  
   // UTAHContext *s = avctx->priv_data;
   //AVFrame * const p = &s->picture;
   uint8_t *buf;
@@ -56,17 +56,19 @@ namespace circlespace
   // printf("Width: %d, height: %d, Linesize: %d\n",avctx->width, avctx->height);
   
   int radius=0;
-  radius=width*.20;
+  radius=c->width*.10;
   int center=0;
-  center=width/2;
+  center=c->width/2;
+  int centerH=c->height/2;
   int diamater=radius*2;
 
   int left=0;
   int right=0;
 
+
   ;
  ////////////////////////////////////////////////////////////////////////////////////////////////////
-  int x,y,i;
+  int x,y=0,i;
 AVFrame *frame; 
 //AVCodecContext *c= NULL;
 //AVCodec *codec;
@@ -92,9 +94,25 @@ AVFrame *frame;
 
         /* prepare a dummy image */
         /* Y */
-  for(y=0;y<c->height;y++) {
-            for(x=0;x<c->width;x++) {
+            std::cout<<radius<<y<<std::endl;
+            for(y=0;y<diamater;y++) {
+//int angle=sin(y/radius);
+  //  right=center+radius*cos(angle);
+              std::cout<<y<<" "<<radius<<std::endl;
+              if(y>radius)
+              {
+                left=(center-sqrt((y*y-radius*radius)));
+                right=(center+sqrt((y*y-radius*radius)));
+              }
+              else{
+                left=(center+(y*y-radius*radius));
+                right=(center-(y*y-radius*radius));
+              }
+    //left=center-right;
+
+            for(x=left;x<right;x++) {
                 frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+
 		std::cout << y << std::endl;
             }
         }
