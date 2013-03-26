@@ -58,8 +58,8 @@ namespace circlespace
   int radius=0;
   radius=c->width*.20;
   int center=0;
-  center=c->width/2;
-  int centerH=(c->height/2)+sin(start);
+  center=(c->width/2);
+  int centerH=(c->height/2);
   int diamater=radius*2;
 
   int left=0;
@@ -104,7 +104,7 @@ AVFrame *frame;
 
             for(x=0;x<c->width;x++) {
 
-              if(!(radius<sqrt(pow(center-x,2)+pow(centerH*3-y*3,2)))){
+              if(!(radius<sqrt(pow(center-x,2)+pow(centerH*start-y*3,2)))){
                 frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
               }
 

@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
   AVCodec *pCodec = NULL;
   AVFrame *pFrame = NULL;
   AVFrame *pFrameRGB = NULL;
+  AVFrame *nFRAMERGB = NULL;
   AVPacket packet;
   int frameFinished;
   int numBytes;
@@ -131,6 +132,8 @@ int main(int argc, char *argv[]) {
   }
   // Register all formats and codecs
   av_register_all();
+
+  
   
   // Open video file
   if(avformat_open_input(&pFormatCtx, argv[1], NULL, NULL)!=0)
@@ -224,14 +227,19 @@ pCodecCtx->width, pCodecCtx->height);
         );
 
 // Save the frame to disk
-        cout<<"///////////////////////////////////"<<i<<endl;
-        for(int j=0; j<1; j++){
+ /////////////////////////////////////////////////////////////////////////////////////////     
 
-          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, j);
+
+        nFRAMERGB=pFrameRGB;
+        for(int j=0; j<300; j++){
+
+          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, 5);
         }
 if(++i<=5)
 SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height,
 i);
+
+      pFrameRGB=nFRAMERGB;
       }
     }
     
