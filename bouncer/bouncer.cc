@@ -47,7 +47,7 @@
 
   
   // Open file
-  sprintf(szFilename, "frame%d.png", iFrame);
+  sprintf(szFilename, "frame%03d.png", iFrame);
   pFile=fopen(szFilename, "wb");
   if(pFile==NULL)
     return;
@@ -78,26 +78,29 @@ if (!c) {
     c->height=height;
     c->pix_fmt = AV_PIX_FMT_RGB24;
 
-    frame1=circ.drawCircle(pFrame, c,  10);
+
+    
+    frame1=circ.drawCircle(pFrame, c,  iFrame);
 
     pFrame=frame1;
 
     if (avcodec_open2(c, codec, NULL) < 0) {
-        fprintf(stderr, "Could not open codec\n");
-        exit(1);
+      fprintf(stderr, "Could not open codec\n");
+      exit(1);
     }
 
-      ret = avcodec_encode_video2(c, &pkt, pFrame, &got_output);
-        if (ret < 0) {
-            fprintf(stderr, "Error encoding frame\n");
-            exit(1);
-        }
+    ret = avcodec_encode_video2(c, &pkt, pFrame, &got_output);
+    if (ret < 0) {
+      fprintf(stderr, "Error encoding frame\n");
+      exit(1);
+    }
 
-        if (got_output) {
+    if (got_output) {
            // printf("Write frame %3d (size=%5d)\n", i, pkt.size);
-            fwrite(pkt.data, 1, pkt.size, pFile);
-            av_free_packet(&pkt);
-        }
+      fwrite(pkt.data, 1, pkt.size, pFile);
+      av_free_packet(&pkt);
+    }
+    
 
  
   // Close file
@@ -221,6 +224,11 @@ pCodecCtx->width, pCodecCtx->height);
         );
 
 // Save the frame to disk
+        cout<<"///////////////////////////////////"<<i<<endl;
+        for(int j=0; j<1; j++){
+
+          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, j);
+        }
 if(++i<=5)
 SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height,
 i);

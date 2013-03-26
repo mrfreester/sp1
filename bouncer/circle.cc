@@ -56,10 +56,10 @@ namespace circlespace
   // printf("Width: %d, height: %d, Linesize: %d\n",avctx->width, avctx->height);
   
   int radius=0;
-  radius=c->width*.10;
+  radius=c->width*.20;
   int center=0;
   center=c->width/2;
-  int centerH=c->height/2;
+  int centerH=(c->height/2)+sin(start);
   int diamater=radius*2;
 
   int left=0;
@@ -95,31 +95,26 @@ AVFrame *frame;
         /* prepare a dummy image */
         /* Y */
             std::cout<<radius<<y<<std::endl;
-            for(y=0;y<diamater;y++) {
+            for(y=0;y<c->height;y++) {
 //int angle=sin(y/radius);
   //  right=center+radius*cos(angle);
-              std::cout<<y<<" "<<radius<<std::endl;
-              if(y>radius)
-              {
-                left=(center-sqrt((y*y-radius*radius)));
-                right=(center+sqrt((y*y-radius*radius)));
-              }
-              else{
-                left=(center+(y*y-radius*radius));
-                right=(center-(y*y-radius*radius));
-              }
+              //std::cout<<y<<" "<<radius<<std::endl;
+             
     //left=center-right;
 
-            for(x=left;x<right;x++) {
-                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+            for(x=0;x<c->width;x++) {
 
-		std::cout << y << std::endl;
+              if(!(radius<sqrt(pow(center-x,2)+pow(centerH*3-y*3,2)))){
+                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+              }
+
+		//std::cout << y << std::endl;
             }
         }
 
         /* Cb and Cr */
-        /*for(y=0;y<c->height/2;y++) {
-            for(x=0;x<c->width/2;x++) {
+      /*  for(y=0;y<c->height;y++) {
+            for(x=0;x<c->width;x++) {
                 frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
                 frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
             }
