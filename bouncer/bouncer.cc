@@ -43,7 +43,7 @@
   frame1 = avcodec_alloc_frame();
   circlespace::circle circ;
 
-  frame1=circ.drawCircle(pFrame, 10);
+  // frame1=circ.drawCircle(pFrame, 10);
 
   
   // Open file
@@ -70,10 +70,17 @@ if (!c) {
         fprintf(stderr, "Could not allocate video codec context\n");
         exit(1);
     }
-    pFrame=frame1;
+
+
+
+//pFrame=frame1;
     c->width=width;
     c->height=height;
     c->pix_fmt = AV_PIX_FMT_RGB8;
+
+    frame1=circ.drawCircle(pFrame, c,  10);
+
+    pFrame=frame1;
 
     if (avcodec_open2(c, codec, NULL) < 0) {
         fprintf(stderr, "Could not open codec\n");
