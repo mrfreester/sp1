@@ -10,7 +10,7 @@ static av_cold int UTAH_dec_init(AVCodecContext *avctx)
 {
  UTAHContext *s = avctx->priv_data;
 
-    avcodec_get_frame_defaults(&s->picture);
+ avcodec_get_frame_defaults(&s->picture);
     avctx->coded_frame = &s->picture;
 
     return 0;

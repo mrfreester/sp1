@@ -123,14 +123,16 @@ if (!c) {
 
 
 
- frame1 = Convert(pFrame, AV_PIX_FMT_RGB24);
+    frame1 = Convert(pFrame, codec->pix_fmts[0]);
     c->width=width;
     c->height=height;
+    //codec->pix_fmts[0] gets the first pixel format frome the set decoder
     c->pix_fmt = codec->pix_fmts[0];
 
 
     
     frame1=circ.drawCircle(frame1, c,  iFrame);
+    
 
     
 
