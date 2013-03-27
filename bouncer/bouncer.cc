@@ -5,6 +5,11 @@
  *
  */
 
+ /*
+  *Modified by Brandon Free
+  *and Rory Savage
+ */
+
 
 #include <iostream>
 #include "circle.h"
@@ -20,8 +25,7 @@
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
-  //#include <SDL.h>
-  //#include <SDL_thread.h>
+  
 
  }
 
@@ -39,7 +43,7 @@
   int numBytes=avpicture_get_size(PIX_FMT_RGB24, in->width,
 in->height);
   buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
-std::cout << typeid(PIX_FMT_RGB24).name() << std::endl;
+//std::cout << typeid(PIX_FMT_RGB24).name() << std::endl;
 
   sws_ctx =
     sws_getContext
@@ -90,7 +94,7 @@ std::cout << typeid(PIX_FMT_RGB24).name() << std::endl;
   frame1 = avcodec_alloc_frame();
   circlespace::circle circ;
 
-  // frame1=circ.drawCircle(pFrame, 10);
+  
 
   
   // Open file
@@ -129,7 +133,7 @@ if (!c) {
     
     frame1=circ.drawCircle(frame1, c,  iFrame);
 
-    //pFrame=frame1;
+    
 
     if (avcodec_open2(c, codec, NULL) < 0) {
       fprintf(stderr, "Could not open codec\n");
@@ -143,7 +147,7 @@ if (!c) {
     }
 
     if (got_output) {
-           // printf("Write frame %3d (size=%5d)\n", i, pkt.size);
+          
       fwrite(pkt.data, 1, pkt.size, pFile);
       av_free_packet(&pkt);
     }
@@ -154,7 +158,7 @@ if (!c) {
   fclose(pFile);
   avcodec_close(c);
   av_free(c);
-  printf("\n");
+  //printf("\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -224,31 +228,12 @@ int main(int argc, char *argv[]) {
   if(pFrameRGB==NULL)
     return -1;
   
-  // Determine required buffer size and allocate buffer
-  /*numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
-pCodecCtx->height);
-  buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
-
-  sws_ctx =
-    sws_getContext
-    (
-        pCodecCtx->width,
-        pCodecCtx->height,
-        pCodecCtx->pix_fmt,
-        pCodecCtx->width,
-        pCodecCtx->height,
-        PIX_FMT_RGB24,
-        SWS_BILINEAR,
-        NULL,
-        NULL,
-        NULL
-    );*/
+ 
   
   // Assign appropriate parts of buffer to image planes in pFrameRGB
   // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
   // of AVPicture
-  /*avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
-pCodecCtx->width, pCodecCtx->height);*/
+  
   
   // Read frames and save first five frames to disk
   i=0;
@@ -263,29 +248,16 @@ pCodecCtx->width, pCodecCtx->height);*/
       if(frameFinished) {
 // Convert the image from its native format to RGB
         AVFrame *pFrameRGB = Convert(pFrame, pCodecCtx);
-        /*sws_scale
-        (
-            sws_ctx,
-            (uint8_t const * const *)pFrame->data,
-            pFrame->linesize,
-            0,
-            pCodecCtx->height,
-            pFrameRGB->data,
-            pFrameRGB->linesize
-        );*/
+       
 
 // Save the frame to disk
- /////////////////////////////////////////////////////////////////////////////////////////     
 
 
-        //nFRAMERGB=pFrameRGB;
+        
         for(int j=0; j<300; j++){
-          //pFrameRGB = nFRAMERGB;
           SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, j);
         }
-/*if(++i<=5)
-SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height,
-i);*/
+
 
       pFrameRGB=nFRAMERGB;
       }
@@ -310,3 +282,52 @@ i);*/
   
   return 0;
 }
+/*
+ * Copyright (c) 2001 Fabrice Bellard
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * @file
+ * libavcodec API use example.
+ *
+ * Note that libavcodec only handles codecs (mpeg, mpeg4, etc...),
+ * not file formats (avi, vob, mp4, mov, mkv, mxf, flv, mpegts, mpegps, etc...). See library 'libavformat' for the
+ * format handling
+ * @example doc/examples/decoding_encoding.c
+ */
+ // tutorial01.c
+//
+// This tutorial was written by Stephen Dranger (dranger@gmail.com).
+//
+// Code based on a tutorial by Martin Bohme (boehme@inb.uni-luebeckREMOVETHIS.de)
+// Tested on Gentoo, CVS version 5/01/07 compiled with GCC 4.1.1
+
+// A small sample program that shows how to use libavformat and libavcodec to
+// read video from a file.
+//
+// Use the Makefile to build all examples.
+//
+// Run using
+//
+// tutorial01 myvideofile.mpg
+//
+// to write the first five frames from "myvideofile.mpg" to disk in PPM
+// format.
