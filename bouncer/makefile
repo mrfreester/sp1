@@ -6,8 +6,8 @@ bouncer.out: bouncer.cc circle.h circle.cc
 clean:
 	rm -f *.o *.out *.cc~ *.utah frame* *.mp4
 
-movie: *.png
-	ffmpeg -f image2 -r 30 -pattern_type glob -i '*.png' out.mp4; ffplay out.mp4
+movie: *.utah
+	ffmpeg -f image2 -r 30 -pattern_type glob -i '*.utah' out.mp4; ffplay out.mp4
 frame: 
 	./bouncer street.jpg
 

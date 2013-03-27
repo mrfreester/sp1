@@ -98,7 +98,7 @@ in->height);
 
   
   // Open file
-  sprintf(szFilename, "frame%03d.png", iFrame);
+  sprintf(szFilename, "frame%03d.utah", iFrame);
   pFile=fopen(szFilename, "wb");
   if(pFile==NULL)
     return;
@@ -110,7 +110,7 @@ in->height);
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
 
-  codec = avcodec_find_encoder(AV_CODEC_ID_PNG);
+  codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -127,7 +127,7 @@ if (!c) {
   frame1 = Convert(pFrame, c);
     c->width=width;
     c->height=height;
-    c->pix_fmt = AV_PIX_FMT_RGB24;
+    c->pix_fmt = codec->pix_fmts[0];
 
 
     
