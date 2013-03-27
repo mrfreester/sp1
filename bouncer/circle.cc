@@ -56,10 +56,12 @@ namespace circlespace
   // printf("Width: %d, height: %d, Linesize: %d\n",avctx->width, avctx->height);
   
   int radius=0;
-  radius=c->width*.20;
+  radius=c->width*.10;
   int center=0;
-  center=(c->width/2);
-  int centerH=(c->height/2);
+  center=(width/2);
+  //int centerH=(c->height/2);
+
+  int centerH=50*(sin(start/3))+height/2;
   int diamater=radius*2;
 
   int left=0;
@@ -67,92 +69,32 @@ namespace circlespace
 
 
   ;
- ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
   int x,y=0,i;
-AVFrame *frame; 
-//AVCodecContext *c= NULL;
-//AVCodec *codec;
 
-
-//codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
-    //c = avcodec_alloc_context3(codec);
-
- frame = p;
- //c->height = 20;
- //c->width = 20;
- /*for(start=0;start<height;start++) {
-            for(left=0;left<width;left++) {
-<<<<<<< HEAD
-                p->data[0][start * p->linesize[0] + left] = 150;
-=======
-                p->data[0][start * p->linesize[0] + left] = left + start + 1 * 3;
-		std::cout << "imhere" << std::endl;
->>>>>>> 2f4437f177cc21da732b9b58257d0a55e88df93f
-            }
-	    }*/
-
-
-        /* prepare a dummy image */
-        /* Y */
             std::cout<<radius<<y<<std::endl;
-            for(y=0;y<c->height;y++) {
-//int angle=sin(y/radius);
-  //  right=center+radius*cos(angle);
-              //std::cout<<y<<" "<<radius<<std::endl;
-             
-    //left=center-right;
+            for(y=0;y<p->height;y++) {
 
-            for(x=0;x<c->width;x++) {
 
-              if(!(radius<sqrt(pow(center-x,2)+pow(centerH*start-y*3,2)))){
-                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+            for(x=0;x<p->width;x++) {
+
+              if(!(radius<sqrt(pow(center-x,2)+pow(centerH-y,2)))){
+                //p->data[0][y * p->linesize[0] + x] = x + y + i * 3;
+                uint8_t * pix = p->data[0] + p->linesize[0]*y + x*3;
+                int scale, r, g, b;
+                scale = (.05*(center-x)*(centerH-y));
+                r = 150+scale;
+                g = 150+scale;
+                b = 100+scale;
+                *(pix++) = r;
+                *(pix++) = g;
+                *(pix++) = b;
               }
 
-		//std::cout << y << std::endl;
+		
             }
         }
 
-        /* Cb and Cr */
-      /*  for(y=0;y<c->height;y++) {
-            for(x=0;x<c->width;x++) {
-                frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
-                frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
-            }
-	    }*/
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //For loop to draw circle
- /* for (int row=start; row<=diamater; row++){
-    // define y value
-    int y=row;
-    //define x value
-    int x=0;
-    //Get x position on circle
-    x=sqrt(radius*radius - y*y);
-    //get point on left side of circle
-    int left=center-x;
-    //get point on right side of circle
-    int right=center+x;
-    //define color
-    uint8_t  color=0;
-    //for loop to draw one line of the circle
-    for(left;left<=right; left++){
-      //get position of pixel
-      uint8_t *mypixel = p->data[0]+row*p->linesize[0]+left;
-      //changer color of pixel
-      mypixel=&color;
-      //place pixel into picture
-      bytestream_put_byte(&buf, mypixel[0]);
-			  //increment color
-			  color++;
-    }*/
-
-
-	/* for(int col=0;col<width; col++){
-      uint8_t *mypixel = p->data[0]+row*p->linesize[0]+col;
-       bytestream_put_byte(&buf, mypixel[0]);
-
-       }
-       }*/
 
  
   return p;

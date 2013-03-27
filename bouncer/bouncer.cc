@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "circle.h"
+#include <typeinfo>
 
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
@@ -27,13 +28,59 @@
 
  using namespace std;
 
+ AVFrame * Convert(AVFrame * in, AVCodecContext * ctx)
+ {
+  AVFrame * pFrameRGB;
+  uint8_t *buffer = NULL;
+  struct SwsContext *sws_ctx = NULL;
+
+  pFrameRGB=avcodec_alloc_frame();
+  // Determine required buffer size and allocate buffer
+  int numBytes=avpicture_get_size(PIX_FMT_RGB24, in->width,
+in->height);
+  buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
+std::cout << typeid(PIX_FMT_RGB24).name() << std::endl;
+
+  sws_ctx =
+    sws_getContext
+    (
+        in->width,
+        in->height,
+        (AVPixelFormat)in->format,
+        in->width,
+        in->height,
+        PIX_FMT_RGB24,
+        SWS_BILINEAR,
+        NULL,
+        NULL,
+        NULL
+    );
+
+    avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, in->width, in->height);
+
+            sws_scale
+        (
+            sws_ctx,
+            (uint8_t const * const *)in->data,
+            in->linesize,
+            0,
+            in->height,
+            pFrameRGB->data,
+            pFrameRGB->linesize
+        );
+
+        pFrameRGB->width = in->width;
+        pFrameRGB->height = in->height;
+        pFrameRGB->format = (int)PIX_FMT_RGB24;
+
+        return pFrameRGB;
+ }
+
 
  void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame) {
   FILE *pFile;
   char szFilename[32];
   int y;
-
-
 
   AVCodec *codec;
   AVCodecContext *c= NULL;
@@ -73,23 +120,23 @@ if (!c) {
 
 
 
-//pFrame=frame1;
+  frame1 = Convert(pFrame, c);
     c->width=width;
     c->height=height;
     c->pix_fmt = AV_PIX_FMT_RGB24;
 
 
     
-    frame1=circ.drawCircle(pFrame, c,  iFrame);
+    frame1=circ.drawCircle(frame1, c,  iFrame);
 
-    pFrame=frame1;
+    //pFrame=frame1;
 
     if (avcodec_open2(c, codec, NULL) < 0) {
       fprintf(stderr, "Could not open codec\n");
       exit(1);
     }
 
-    ret = avcodec_encode_video2(c, &pkt, pFrame, &got_output);
+    ret = avcodec_encode_video2(c, &pkt, frame1, &got_output);
     if (ret < 0) {
       fprintf(stderr, "Error encoding frame\n");
       exit(1);
@@ -178,7 +225,7 @@ int main(int argc, char *argv[]) {
     return -1;
   
   // Determine required buffer size and allocate buffer
-  numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
+  /*numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
 pCodecCtx->height);
   buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
 
@@ -195,13 +242,13 @@ pCodecCtx->height);
         NULL,
         NULL,
         NULL
-    );
+    );*/
   
   // Assign appropriate parts of buffer to image planes in pFrameRGB
   // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
   // of AVPicture
-  avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
-pCodecCtx->width, pCodecCtx->height);
+  /*avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
+pCodecCtx->width, pCodecCtx->height);*/
   
   // Read frames and save first five frames to disk
   i=0;
@@ -215,7 +262,8 @@ pCodecCtx->width, pCodecCtx->height);
       // Did we get a video frame?
       if(frameFinished) {
 // Convert the image from its native format to RGB
-        sws_scale
+        AVFrame *pFrameRGB = Convert(pFrame, pCodecCtx);
+        /*sws_scale
         (
             sws_ctx,
             (uint8_t const * const *)pFrame->data,
@@ -224,20 +272,20 @@ pCodecCtx->width, pCodecCtx->height);
             pCodecCtx->height,
             pFrameRGB->data,
             pFrameRGB->linesize
-        );
+        );*/
 
 // Save the frame to disk
  /////////////////////////////////////////////////////////////////////////////////////////     
 
 
-        nFRAMERGB=pFrameRGB;
+        //nFRAMERGB=pFrameRGB;
         for(int j=0; j<300; j++){
-
-          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, 5);
+          //pFrameRGB = nFRAMERGB;
+          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, j);
         }
-if(++i<=5)
+/*if(++i<=5)
 SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height,
-i);
+i);*/
 
       pFrameRGB=nFRAMERGB;
       }
