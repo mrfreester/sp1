@@ -122,7 +122,7 @@ if (!c) {
     }
 
 
-
+    //codec->pix_fmts[0] makes it universial for all utah encoders
     frame1 = Convert(pFrame, codec->pix_fmts[0]);
     c->width=width;
     c->height=height;
