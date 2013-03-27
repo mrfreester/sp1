@@ -32,7 +32,7 @@
 
  using namespace std;
 
- AVFrame * Convert(AVFrame * in, AVCodecContext * ctx)
+AVFrame * Convert(AVFrame * in, AVPixelFormat out_fmt)
  {
   AVFrame * pFrameRGB;
   uint8_t *buffer = NULL;
@@ -40,10 +40,9 @@
 
   pFrameRGB=avcodec_alloc_frame();
   // Determine required buffer size and allocate buffer
-  int numBytes=avpicture_get_size(PIX_FMT_RGB24, in->width,
+  int numBytes=avpicture_get_size(out_fmt, in->width,
 in->height);
   buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
-//std::cout << typeid(PIX_FMT_RGB24).name() << std::endl;
 
   sws_ctx =
     sws_getContext
@@ -53,14 +52,14 @@ in->height);
         (AVPixelFormat)in->format,
         in->width,
         in->height,
-        PIX_FMT_RGB24,
+        out_fmt,
         SWS_BILINEAR,
         NULL,
         NULL,
         NULL
     );
 
-    avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, in->width, in->height);
+    avpicture_fill((AVPicture *)pFrameRGB, buffer, out_fmt, in->width, in->height);
 
             sws_scale
         (
@@ -75,7 +74,7 @@ in->height);
 
         pFrameRGB->width = in->width;
         pFrameRGB->height = in->height;
-        pFrameRGB->format = (int)PIX_FMT_RGB24;
+        pFrameRGB->format = (int)out_fmt;
 
         return pFrameRGB;
  }
@@ -124,7 +123,7 @@ if (!c) {
 
 
 
-  frame1 = Convert(pFrame, c);
+ frame1 = Convert(pFrame, AV_PIX_FMT_RGB24);
     c->width=width;
     c->height=height;
     c->pix_fmt = AV_PIX_FMT_RGB24;
@@ -167,7 +166,7 @@ int main(int argc, char *argv[]) {
   AVCodecContext *pCodecCtx = NULL;
   AVCodec *pCodec = NULL;
   AVFrame *pFrame = NULL;
-  AVFrame *pFrameRGB = NULL;
+  //AVFrame *pFrameRGB = NULL;
   AVFrame *nFRAMERGB = NULL;
   AVPacket packet;
   int frameFinished;
@@ -224,9 +223,9 @@ int main(int argc, char *argv[]) {
   pFrame=avcodec_alloc_frame();
   
   // Allocate an AVFrame structure
-  pFrameRGB=avcodec_alloc_frame();
-  if(pFrameRGB==NULL)
-    return -1;
+  //pFrameRGB=avcodec_alloc_frame();
+  //if(pFrameRGB==NULL)
+  //  return -1;
   
  
   
@@ -247,7 +246,7 @@ int main(int argc, char *argv[]) {
       // Did we get a video frame?
       if(frameFinished) {
 // Convert the image from its native format to RGB
-        AVFrame *pFrameRGB = Convert(pFrame, pCodecCtx);
+        //AVFrame *pFrameRGB = Convert(pFrame);
        
 
 // Save the frame to disk
@@ -255,11 +254,11 @@ int main(int argc, char *argv[]) {
 
         
         for(int j=0; j<300; j++){
-          SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, j);
+          SaveFrame(pFrame, pCodecCtx->width, pCodecCtx->height, j);
         }
 
 
-      pFrameRGB=nFRAMERGB;
+	//pFrameRGB=nFRAMERGB;
       }
     }
     
@@ -269,7 +268,7 @@ int main(int argc, char *argv[]) {
   
   // Free the RGB image
   av_free(buffer);
-  av_free(pFrameRGB);
+  //av_free(pFrameRGB);
   
   // Free the YUV frame
   av_free(pFrame);
