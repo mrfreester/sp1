@@ -182,10 +182,16 @@ int main(int argc, char *argv[]) {
   AVDictionary *optionsDict = NULL;
   struct SwsContext *sws_ctx = NULL;
   
-  if(argc < 2) {
+  /*if(argc < 2) {
     printf("Please provide a movie file\n");
     return -1;
-  }
+    }*/
+
+  if(argc < 2 || strlen(argv[1]) < 5 || strcmp(argv[1] + strlen(argv[1])-4, ".jpg") != 0)
+    {
+      std::cout << "Please provide a .jpg image" << std::endl;
+      return -1;
+    }
   // Register all formats and codecs
   av_register_all();
 
@@ -228,21 +234,10 @@ int main(int argc, char *argv[]) {
   // Allocate video frame
   pFrame=avcodec_alloc_frame();
   
-  // Allocate an AVFrame structure
-  //pFrameRGB=avcodec_alloc_frame();
-  //if(pFrameRGB==NULL)
-  //  return -1;
-  
- 
-  
-  // Assign appropriate parts of buffer to image planes in pFrameRGB
-  // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
-  // of AVPicture
-  
-  
   // Read frames and save first five frames to disk
   i=0;
-  while(av_read_frame(pFormatCtx, &packet)>=0) {
+  int gotFrame = 0;
+  while(av_read_frame(pFormatCtx, &packet)>=0 && gotFrame!=1) {
     // Is this a packet from the video stream?
     if(packet.stream_index==videoStream) {
       // Decode video frame
@@ -251,20 +246,13 @@ int main(int argc, char *argv[]) {
       
       // Did we get a video frame?
       if(frameFinished) {
-// Convert the image from its native format to RGB
-        //AVFrame *pFrameRGB = Convert(pFrame);
-       
 
 // Save the frame to disk
-
-
-        
         for(int j=0; j<300; j++){
           SaveFrame(pFrame, pCodecCtx->width, pCodecCtx->height, j);
         }
 
-
-	//pFrameRGB=nFRAMERGB;
+	gotFrame = 1;
       }
     }
     
@@ -272,10 +260,7 @@ int main(int argc, char *argv[]) {
     av_free_packet(&packet);
   }
   
-  // Free the RGB image
   av_free(buffer);
-  //av_free(pFrameRGB);
-  
   // Free the YUV frame
   av_free(pFrame);
   
