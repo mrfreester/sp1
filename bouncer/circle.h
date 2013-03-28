@@ -30,7 +30,7 @@ class circle
 public:
 	circle();
 	~circle();
-	AVFrame* drawCircle(AVFrame *p, AVCodecContext *c,  int start);
+	AVFrame* drawCircle(AVFrame *p, int start);
 };
 
 }

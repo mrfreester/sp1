@@ -27,7 +27,7 @@ namespace circlespace
   circle::~circle(){}
 
 
-  AVFrame* circle::drawCircle(AVFrame *p, AVCodecContext *c,  int start)
+  AVFrame* circle::drawCircle(AVFrame *p,  int start)
 {
   
 
@@ -39,7 +39,7 @@ namespace circlespace
   width = p->width;
   
   int radius=0;
-  radius=c->width*.10;
+  radius=p->width*.10;
   int center=0;
   center=(width/2);
   

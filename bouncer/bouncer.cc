@@ -25,20 +25,22 @@
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
-  
-
  }
 
 
  using namespace std;
 
+
+//Takes in an AVFrame and converts it to a new one with
+//a specified pixel format
 AVFrame * Convert(AVFrame * in, AVPixelFormat out_fmt)
  {
-  AVFrame * pFrameRGB;
+   //holds the frame we're converting to
+  AVFrame * outFrame;
   uint8_t *buffer = NULL;
   struct SwsContext *sws_ctx = NULL;
 
-  pFrameRGB=avcodec_alloc_frame();
+  outFrame=avcodec_alloc_frame();
   // Determine required buffer size and allocate buffer
   int numBytes=avpicture_get_size(out_fmt, in->width,
 in->height);
@@ -59,7 +61,7 @@ in->height);
         NULL
     );
 
-    avpicture_fill((AVPicture *)pFrameRGB, buffer, out_fmt, in->width, in->height);
+    avpicture_fill((AVPicture *)outFrame, buffer, out_fmt, in->width, in->height);
 
             sws_scale
         (
@@ -68,15 +70,15 @@ in->height);
             in->linesize,
             0,
             in->height,
-            pFrameRGB->data,
-            pFrameRGB->linesize
+            outFrame->data,
+            outFrame->linesize
         );
 
-        pFrameRGB->width = in->width;
-        pFrameRGB->height = in->height;
-        pFrameRGB->format = (int)out_fmt;
+        outFrame->width = in->width;
+        outFrame->height = in->height;
+        outFrame->format = (int)out_fmt;
 
-        return pFrameRGB;
+        return outFrame;
  }
 
 
@@ -89,13 +91,16 @@ in->height);
   AVCodecContext *c= NULL;
    int ret, got_output;
   AVPacket pkt;
-  AVFrame *frame1;
-  frame1 = avcodec_alloc_frame();
+  AVFrame *circFrame;
+  AVFrame *outFrame;
   circlespace::circle circ;
 
-  
+  //Our circle will always be RGB24
+  //but the utah encoder may be RGB8 or RGB24
+  //so we need to allocate one frame for each
+  circFrame = avcodec_alloc_frame();
+  outFrame = avcodec_alloc_frame();
 
-  
   // Open file
   sprintf(szFilename, "frame%03d.utah", iFrame);
   pFile=fopen(szFilename, "wb");
@@ -103,62 +108,62 @@ in->height);
     return;
 
 
-
-
    av_init_packet(&pkt);
-        pkt.data = NULL;    // packet data will be allocated by the encoder
-        pkt.size = 0;
+   pkt.data = NULL;    // packet data will be allocated by the encoder
+   pkt.size = 0;
 
-  codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
-    if (!codec) {
-        fprintf(stderr, "Codec not found\n");
-        exit(1);
-    }
+   //Convert the frame to RGB24 so we can properly draw a circle
+   circFrame = Convert(pFrame, PIX_FMT_RGB24);
+    
+   //Draw the circle and put it in the frame
+   circFrame=circ.drawCircle(circFrame, iFrame);
+    
+    	//Find the codec information of the UTAH encoder 
+	//so we can have access to the correct format (Likely RGB8 or RGB24)
+   codec = avcodec_find_encoder(AV_CODEC_ID_UTAH);
+   if (!codec) {
+     fprintf(stderr, "Codec not found\n");
+     exit(1);
+   }
   
-  c = avcodec_alloc_context3(codec);
-if (!c) {
-        fprintf(stderr, "Could not allocate video codec context\n");
-        exit(1);
-    }
+   c = avcodec_alloc_context3(codec);
+   if (!c) {
+     fprintf(stderr, "Could not allocate video codec context\n");
+     exit(1);
+   }
 
+   c->width=width;
+   c->height=height;
+    //codec->pix_fmts[0] gets the first pixel format frome the set encoder
+   c->pix_fmt = codec->pix_fmts[0];
 
-    //codec->pix_fmts[0] makes it universial for all utah encoders
-    frame1 = Convert(pFrame, codec->pix_fmts[0]);
-    c->width=width;
-    c->height=height;
-    //codec->pix_fmts[0] gets the first pixel format frome the set decoder
-    c->pix_fmt = codec->pix_fmts[0];
+   //Convert the circFrame to a frame in our utah format
+   outFrame = Convert(circFrame, codec->pix_fmts[0]);
 
+   
+   if (avcodec_open2(c, codec, NULL) < 0) {
+     fprintf(stderr, "Could not open codec\n");
+     exit(1);
+   }
 
-    
-    frame1=circ.drawCircle(frame1, c,  iFrame);
-    
+   ret = avcodec_encode_video2(c, &pkt, outFrame, &got_output);
+   if (ret < 0) {
+     fprintf(stderr, "Error encoding frame\n");
+     exit(1);
+   }
 
-    
-
-    if (avcodec_open2(c, codec, NULL) < 0) {
-      fprintf(stderr, "Could not open codec\n");
-      exit(1);
-    }
-
-    ret = avcodec_encode_video2(c, &pkt, frame1, &got_output);
-    if (ret < 0) {
-      fprintf(stderr, "Error encoding frame\n");
-      exit(1);
-    }
-
-    if (got_output) {
+   if (got_output) {
           
-      fwrite(pkt.data, 1, pkt.size, pFile);
-      av_free_packet(&pkt);
-    }
-    
-
+     fwrite(pkt.data, 1, pkt.size, pFile);
+     av_free_packet(&pkt);
+   }
  
   // Close file
   fclose(pFile);
   avcodec_close(c);
   av_free(c);
+  av_free(circFrame);
+  av_free(outFrame);
   //printf("\n");
 }
 
@@ -168,7 +173,6 @@ int main(int argc, char *argv[]) {
   AVCodecContext *pCodecCtx = NULL;
   AVCodec *pCodec = NULL;
   AVFrame *pFrame = NULL;
-  //AVFrame *pFrameRGB = NULL;
   AVFrame *nFRAMERGB = NULL;
   AVPacket packet;
   int frameFinished;
